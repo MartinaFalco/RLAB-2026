@@ -1261,11 +1261,19 @@ input[type='range'] {
   justify-content: center;
 }
 
+.gallery figure {
+  flex: 0 1 614px;
+  margin: 0;
+  min-width: 0;
+}
+
 .gallery img {
   border: 1px solid var(--line);
   border-radius: 10px;
-  max-height: 460px;
-  max-width: 100%;
+  display: block;
+  height: 460px;
+  object-fit: contain;
+  width: 100%;
 }
 
 .gallery-empty {

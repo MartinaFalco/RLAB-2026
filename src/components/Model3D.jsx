@@ -285,15 +285,9 @@ function construirEscenaEsquematica(grupo) {
   pieMonitor.position.set(0, 1.09, -0.55)
   grupo.add(pieMonitor)
 
-  // Trípodes de las cámaras (5)
+  // Trípodes de las cámaras: uno delante de cada consola
   const matCamara = new THREE.MeshStandardMaterial({ color: '#64748b', roughness: 0.6, metalness: 0.4 })
-  const posicionesCamara = [
-    [-3.2, -2.4],
-    [-1, -2.6],
-    [1.2, -2.6],
-    [3.2, -2.4],
-    [0, 2.8],
-  ]
+  const posicionesCamara = CONSOLAS_3D.map(({ x }) => [x, 2.4])
   posicionesCamara.forEach(([x, z]) => {
     const mastil = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 2.2, 10), matCamara)
     mastil.position.set(x, 1.1, z)

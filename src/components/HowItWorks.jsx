@@ -426,13 +426,14 @@ function Sensores() {
   )
 }
 
-/**
- * Galería del proyecto.
- * Para cargar las fotos reales: dejar los archivos en `public/galeria/` y
- * listarlos en el array GALERIA (la ruta se resuelve con import.meta.env.BASE_URL).
- */
+
 const GALERIA = [
-  // { src: 'galeria/consola-perforador.jpg', caption: 'Consola del perforador instrumentada' },
+  { src: 'galeria/image1.jpg', caption: 'Vista general de las cuatro consolas del simulador' },
+  { src: 'galeria/image2.jpg', caption: 'Vista general de las consolas en el laboratorio' },
+  { src: 'galeria/consolaPerforador.jpg', caption: 'Consola del perforador instrumentada' },
+  { src: 'galeria/ConsolaTopDrive.jpg', caption: 'Consola del top drive instrumentada' },
+  { src: 'galeria/consolaBOP.jpg', caption: 'Consola del BOP instrumentada' },
+  { src: 'galeria/ConsolaEstrangulador.jpg', caption: 'Consola del estrangulador instrumentada' },
 ]
 
 function Galeria() {
@@ -446,14 +447,6 @@ function Galeria() {
           Esta sección va a reunir las fotos del proceso de montaje: instalación de las cámaras, soportes
           de los motores sobre las perillas, cableado del PoKeys57U y puesta a punto del gateway.
         </p>
-        <div className="gallery-empty">
-          <span aria-hidden="true">🖼️</span>
-          <p>
-            Todavía no hay imágenes cargadas. Copiá las fotos en <code>public/galeria/</code> y agregá una
-            entrada por foto en el array <code>GALERIA</code> de{' '}
-            <code>src/components/HowItWorks.jsx</code>.
-          </p>
-        </div>
       </div>
     )
   }
