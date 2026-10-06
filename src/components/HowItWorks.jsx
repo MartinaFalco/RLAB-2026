@@ -42,33 +42,6 @@ export default function HowItWorks() {
 const PANELES = [
   {
     n: 1,
-    nombre: 'Consola del perforador',
-    color: '#2563eb',
-    instrumentos: ['Presión de bomba', 'Torque de rotaria', 'Velocidad de rotaria', 'SPM bomba 1', 'SPM bomba 2'],
-    mandos: [
-      'Embragues de bomba 1 y 2 (ON/OFF)',
-      'Perillas de SPM de cada bomba',
-      'Mesa rotaria: FWD / OFF / REV y perilla de velocidad',
-      'Embrague del tambor: HIGH / OFF / LOW',
-      'Acelerador del malacate y freno auxiliar',
-      'Palanca de freno del perforador',
-    ],
-  },
-  {
-    n: 2,
-    nombre: 'Consola del top drive',
-    color: '#1d4ed8',
-    instrumentos: ['Torque', 'Velocidad'],
-    mandos: [
-      'Operación: DRILL / SPIN / TORQUE',
-      'Dirección: CCW / STOP / CW',
-      'Acelerador y límite de torque de perforación',
-      'IBOP (abrir/cerrar) y perno de traba',
-      'Rotación e inclinación de links, clamp',
-    ],
-  },
-  {
-    n: 3,
     nombre: 'Consola del BOP',
     color: '#dc2626',
     instrumentos: [
@@ -86,7 +59,7 @@ const PANELES = [
     ],
   },
   {
-    n: 4,
+    n: 2,
     nombre: 'Consola del estrangulador',
     color: '#f59e0b',
     instrumentos: [
@@ -103,6 +76,39 @@ const PANELES = [
       'Reset del contador de emboladas',
     ],
   },
+  {
+    n: 3,
+    nombre: 'Consola del perforador',
+    color: '#2563eb',
+    instrumentos: [
+      'Presión de bomba',
+      'Torque de rotaria',
+      'Velocidad de rotaria',
+      'SPM bomba 1',
+      'SPM bomba 2',
+    ],
+    mandos: [
+      'Embragues de bomba 1 y 2 (ON/OFF)',
+      'Perillas de SPM de cada bomba',
+      'Mesa rotaria: FWD / OFF / REV y perilla de velocidad',
+      'Embrague del tambor: HIGH / OFF / LOW',
+      'Acelerador del malacate y freno auxiliar',
+      'Palanca de freno del perforador',
+    ],
+  },
+  {
+    n: 4,
+    nombre: 'Consola del top drive',
+    color: '#1d4ed8',
+    instrumentos: ['Torque', 'Velocidad'],
+    mandos: [
+      'Operación: DRILL / SPIN / TORQUE',
+      'Dirección: CCW / STOP / CW',
+      'Acelerador y límite de torque de perforación',
+      'IBOP (abrir/cerrar) y perno de traba',
+      'Rotación e inclinación de links, clamp',
+    ],
+  },
 ]
 
 function Simulador() {
@@ -112,8 +118,8 @@ function Simulador() {
       <p>
         El ESIM-PDS9B es un simulador portátil de control de pozos fabricado por Chengdu Esimtech, que
         cumple con las normas <strong>IADC</strong> e <strong>IWCF</strong>. El puesto se compone de
-        cuatro consolas de aluminio —perforador, top drive, BOP y estrangulador—, una notebook con el
-        software de simulación, una pantalla táctil y un monitor para la vista gráfica 3D. La
+        cuatro consolas de aluminio —BOP, estrangulador, perforador y top drive—, una notebook con el
+        software de simulación y un monitor para la vista gráfica 3D. La
         adquisición de datos y el control se resuelven con controladores industriales embebidos.
       </p>
 
@@ -146,8 +152,8 @@ function Simulador() {
             )
           })}
 
-          {/* notebook, táctil y monitor */}
-          <g transform="translate(355 170)">
+          {/* notebook y monitor */}
+          <g transform="translate(410 190)">
             <rect width="80" height="70" rx="6" fill="#1f2937" stroke="#475569" />
             <rect x="8" y="8" width="64" height="40" rx="3" fill="#0b1220" stroke="#38bdf8" />
             <rect y="74" width="80" height="8" rx="3" fill="#334155" />
@@ -157,21 +163,12 @@ function Simulador() {
             </text>
           </g>
 
-          <g transform="translate(450 180)">
-            <rect width="70" height="60" rx="6" fill="#22d3ee" opacity="0.85" />
-            <rect x="7" y="7" width="56" height="46" rx="3" fill="#0b1220" stroke="#22d3ee" />
-            <circle cx="76" cy="-6" r="16" fill="#ef4444" />
-            <text x="76" y="-1" textAnchor="middle" fill="#fff" fontSize="15" fontWeight="700">
-              6
-            </text>
-          </g>
-
-          <g transform="translate(360 70)">
+          <g transform="translate(370 70)">
             <rect width="160" height="90" rx="6" fill="#1f2937" stroke="#475569" />
             <rect x="8" y="8" width="144" height="74" rx="3" fill="#0b1220" stroke="#38bdf8" />
             <circle cx="-6" cy="-6" r="16" fill="#ef4444" />
             <text x="-6" y="-1" textAnchor="middle" fill="#fff" fontSize="15" fontWeight="700">
-              7
+              6
             </text>
           </g>
         </svg>
@@ -214,13 +211,6 @@ function Simulador() {
         <li>
           <span className="badge">6</span>
           <div>
-            <strong>Pantalla táctil</strong>
-            <span>Carga de escenarios, parámetros del pozo y fallas durante el ejercicio.</span>
-          </div>
-        </li>
-        <li>
-          <span className="badge">7</span>
-          <div>
             <strong>Monitor de vista gráfica</strong>
             <span>Animación 3D de la torre, el fondo de pozo y las curvas de parámetros.</span>
           </div>
@@ -254,7 +244,7 @@ function Resumen() {
       <h3>Las dos líneas de remotización</h3>
       <p>
         <strong>Línea A · Remotización asistida.</strong> Cinco cámaras HD transmiten el estado de las
-        consolas; la notebook y la pantalla táctil se operan con software de escritorio remoto y un
+        consolas; la notebook se opera con software de escritorio remoto y un
         operador local ejecuta las acciones físicas indicadas por audio o chat. Es la vía de menor costo
         y la que permite un piloto en pocas semanas.
       </p>

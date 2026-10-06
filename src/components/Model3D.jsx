@@ -112,8 +112,7 @@ export default function Model3D() {
         <p>
           Representación del puesto del simulador <strong>ESIM-PDS9B</strong> según la disposición de la
           especificación del fabricante: las cuatro consolas portátiles de aluminio —perforador y top
-          drive en azul, BOP en rojo y estrangulador en amarillo—, la notebook central, la pantalla
-          táctil del instructor y el monitor de la vista gráfica.
+          drive en azul, BOP en rojo y estrangulador en amarillo—, la notebook central y el monitor de la vista gráfica.
         </p>
         <p>
           Se puede explorar con <strong>ROTACIÓN</strong> (arrastrar con el botón izquierdo),{' '}
@@ -125,19 +124,16 @@ export default function Model3D() {
         </p>
         <ul className="legend">
           <li>
-            <span className="swatch" style={{ background: '#2563eb' }} /> Consola del perforador
-          </li>
-          <li>
-            <span className="swatch" style={{ background: '#1d4ed8' }} /> Consola del top drive
-          </li>
-          <li>
             <span className="swatch" style={{ background: '#dc2626' }} /> Consola del BOP
           </li>
           <li>
             <span className="swatch" style={{ background: '#f59e0b' }} /> Consola del estrangulador
           </li>
           <li>
-            <span className="swatch" style={{ background: '#22d3ee' }} /> Pantalla táctil del instructor
+            <span className="swatch" style={{ background: '#2563eb' }} /> Consola del perforador
+          </li>
+          <li>
+            <span className="swatch" style={{ background: '#1d4ed8' }} /> Consola del top drive
           </li>
         </ul>
       </aside>
@@ -152,17 +148,17 @@ export default function Model3D() {
  * perforador y top drive en azul, BOP en rojo y estrangulador en amarillo.
  */
 const CONSOLAS_3D = [
-  { x: -3.3, color: '#2563eb', perillas: 4, botones: 2 },
-  { x: -1.6, color: '#1d4ed8', perillas: 2, botones: 3 },
-  { x: 1.6, color: '#dc2626', perillas: 1, botones: 5 },
-  { x: 3.3, color: '#f59e0b', perillas: 2, botones: 2 },
+  { x: -3.3, color: '#dc2626', perillas: 1, botones: 5 },
+  { x: -1.6, color: '#f59e0b', perillas: 2, botones: 2 },
+  { x: 1.6, color: '#2563eb', perillas: 4, botones: 2 },
+  { x: 3.3, color: '#1d4ed8', perillas: 2, botones: 3 },
+  
+  
 ]
 
 /** Construye un puesto de trabajo esquemático con cajas y cilindros. */
 function construirEscenaEsquematica(grupo) {
   const matMesa = new THREE.MeshStandardMaterial({ color: '#1f2937', roughness: 0.7, metalness: 0.2 })
-  const matConsola = new THREE.MeshStandardMaterial({ color: '#2563eb', roughness: 0.45, metalness: 0.35 })
-  const matTactil = new THREE.MeshStandardMaterial({ color: '#22d3ee', roughness: 0.3, metalness: 0.5 })
   const matPerilla = new THREE.MeshStandardMaterial({ color: '#f59e0b', roughness: 0.4, metalness: 0.6 })
   const matBoton = new THREE.MeshStandardMaterial({ color: '#ef4444', roughness: 0.4 })
   const matPantalla = new THREE.MeshStandardMaterial({
@@ -216,11 +212,6 @@ function construirEscenaEsquematica(grupo) {
       consola.add(instrumento)
     }
 
-    // Display digital
-    const display = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.16), matPantalla)
-    display.position.set(0, 0.98, 0.075)
-    consola.add(display)
-
     // Perillas motorizadas (Nema 17)
     for (let k = 0; k < perillas; k += 1) {
       const perilla = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.09, 0.11, 20), matPerilla)
@@ -261,16 +252,7 @@ function construirEscenaEsquematica(grupo) {
   pantallaNotebook.rotation.x = -Math.PI / 9
   grupo.add(pantallaNotebook)
 
-  // Pantalla táctil del instructor
-  const tactil = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.8, 0.06), matTactil)
-  tactil.position.set(0.55, 1.4, 0.35)
-  tactil.rotation.x = -Math.PI / 12
-  grupo.add(tactil)
-
-  const brilloTactil = new THREE.Mesh(new THREE.PlaneGeometry(1.05, 0.7), matPantalla)
-  brilloTactil.position.set(0.55, 1.4, 0.39)
-  brilloTactil.rotation.x = -Math.PI / 12
-  grupo.add(brilloTactil)
+ 
 
   // Monitor de la vista gráfica 3D
   const monitor = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.9, 0.07), matMesa)
