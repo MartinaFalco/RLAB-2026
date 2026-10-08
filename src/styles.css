@@ -1071,6 +1071,292 @@ input[type='range'] {
   font-size: 0.85rem;
 }
 
+/* ---------- Consolas interactivas (réplica del Hardware Test) ----------- */
+.hw {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 260px 1fr;
+}
+
+.hw-lista {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.8rem;
+}
+
+.hw-item {
+  align-items: center;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  font-size: 0.85rem;
+  font-weight: 600;
+  gap: 0.6rem;
+  padding: 0.7rem 0.8rem;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.hw-item:hover {
+  border-color: var(--accent);
+}
+
+.hw-item.is-active {
+  background: rgba(37, 99, 235, 0.22);
+  border-color: #60a5fa;
+}
+
+.hw-chip {
+  border-radius: 4px;
+  flex: 0 0 26px;
+  height: 34px;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35);
+}
+
+.hw-test {
+  align-items: center;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  font-size: 0.82rem;
+  gap: 0.45rem;
+  margin-top: 0.4rem;
+  padding-top: 0.7rem;
+}
+
+.hw-test input {
+  accent-color: var(--warn);
+}
+
+.hw-ayuda {
+  color: #64748b;
+  font-size: 0.72rem;
+  margin: 0;
+}
+
+.hw-panel {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.hw-head {
+  align-items: center;
+  background: #0d1628;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.6rem 1rem;
+}
+
+.hw-head h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.hw-badge {
+  background: rgba(245, 158, 11, 0.18);
+  border: 1px solid var(--warn);
+  border-radius: 999px;
+  color: #fcd34d;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.1rem 0.6rem;
+}
+
+.hw-badge-muted {
+  background: rgba(148, 163, 184, 0.12);
+  border-color: var(--muted);
+  color: var(--muted);
+}
+
+.hw-lienzo {
+  display: flex;
+  justify-content: center;
+  padding: 1.2rem;
+}
+
+.consola-svg {
+  height: auto;
+  max-height: 72vh;
+  max-width: 460px;
+  width: 100%;
+}
+
+.pieza {
+  user-select: none;
+}
+
+.pieza-click {
+  cursor: pointer;
+}
+
+.pieza-click:hover {
+  filter: brightness(1.25);
+}
+
+.pieza-knob {
+  cursor: grab;
+}
+
+.pieza-knob:active {
+  cursor: grabbing;
+}
+
+/* Diálogos del modo prueba */
+.hw-modal-fondo {
+  align-items: center;
+  background: rgba(2, 6, 16, 0.72);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 1rem;
+  position: fixed;
+  z-index: 40;
+}
+
+.hw-modal {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  max-width: 380px;
+  width: 100%;
+}
+
+.hw-modal header {
+  background: #0d1628;
+  border-bottom: 1px solid var(--line);
+  border-radius: 12px 12px 0 0;
+  font-weight: 700;
+  padding: 0.7rem 1rem;
+  text-align: center;
+}
+
+.hw-modal-cuerpo {
+  padding: 1rem;
+}
+
+.hw-botones {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.hw-confirm {
+  font-size: 0.9rem;
+  margin: 0;
+  text-align: center;
+}
+
+.teclado-valor {
+  align-items: center;
+  display: flex;
+  font-size: 0.85rem;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.teclado-valor input {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--accent-2);
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  padding: 0.3rem 0.5rem;
+  text-align: right;
+  width: 120px;
+}
+
+.teclado-valor input.fuera {
+  border-color: var(--bad);
+  color: #fca5a5;
+}
+
+.teclado-rango {
+  color: var(--accent);
+  font-size: 0.78rem;
+  margin: 0.3rem 0 0.8rem;
+  text-align: center;
+}
+
+.teclado {
+  display: grid;
+  gap: 0.45rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.teclado button {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.55rem 0;
+}
+
+.teclado button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.teclado button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.teclado-ok {
+  background: #16a34a !important;
+  border-color: #22c55e !important;
+  color: #fff;
+  font-weight: 700;
+}
+
+.calib-fila {
+  align-items: center;
+  display: flex;
+  font-size: 0.84rem;
+  gap: 0.6rem;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.calib-fila input,
+.calib-fila select {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.84rem;
+  padding: 0.25rem 0.4rem;
+  text-align: right;
+  width: 110px;
+}
+
+.calib-error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  border-radius: 8px;
+  color: #fca5a5;
+  font-size: 0.8rem;
+  margin: 0.6rem 0 0;
+  padding: 0.5rem 0.6rem;
+}
+
 /* ---------- ¿Como funciona? -------------------------------------------- */
 .subtabs {
   display: flex;
@@ -1363,8 +1649,18 @@ input[type='range'] {
 /* ---------- Responsive -------------------------------------------------- */
 @media (max-width: 1100px) {
   .model-section,
-  .panel-body {
+  .panel-body,
+  .hw {
     grid-template-columns: 1fr;
+  }
+
+  .hw-lista {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .hw-item {
+    flex: 1 1 180px;
   }
 
   .model-canvas {

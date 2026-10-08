@@ -47,13 +47,16 @@ LIMITES: dict[str, tuple] = {
     "link_tilting": (str, ["REAR", "CENTRO", "FRONT"]),
     "clamp": (bool,),
     # Consola del BOP
+    "rig_air": (bool,),
     "annular": (bool,),
     "pipe_rams_upper": (bool,),
     "blind_rams": (bool,),
     "pipe_rams_lower": (bool,),
+    "pipe_rams_bottom": (bool,),
     "kill_line": (bool,),
     "choke_line": (bool,),
     "bypass": (bool,),
+    "pressure_regulator_select": (str, ["RAMS", "ANNULAR"]),
     "annular_regulator": (0, 3000),
     # Consola del estrangulador
     "choke_valve": (str, ["ABRIR", "MANTENER", "CERRAR"]),
@@ -83,13 +86,16 @@ ESTADO_INICIAL = {
     "link_rotation": "CENTRO",
     "link_tilting": "CENTRO",
     "clamp": False,
+    "rig_air": True,
     "annular": False,
     "pipe_rams_upper": False,
     "blind_rams": False,
     "pipe_rams_lower": False,
+    "pipe_rams_bottom": False,
     "kill_line": False,
     "choke_line": True,
     "bypass": False,
+    "pressure_regulator_select": "ANNULAR",
     "annular_regulator": 1500,
     "choke_valve": "MANTENER",
     "choke_select": False,
@@ -108,6 +114,9 @@ def clamp(v: float, lo: float, hi: float) -> float:
 class BaseBackend:
     def __init__(self) -> None:
         self._state = dict(ESTADO_INICIAL)
+        # Lecturas forzadas desde el modo prueba y recorrido util de cada perilla.
+        self._overrides: dict[str, float] = {}
+        self._calibraciones: dict[str, dict] = {}
 
     def state(self) -> dict:
         return dict(self._state)
@@ -163,6 +172,9 @@ class BaseBackend:
         elif accion == "reset_strokes":
             self._reset_strokes()
             return
+        elif accion == "flowmeter_reset":
+            self._reset_flowmeter()
+            return
         elif accion == "parada_emergencia":
             cambios = {
                 "pump1_clutch": False,
@@ -199,6 +211,45 @@ class BaseBackend:
 
     def _reset_strokes(self) -> None:
         pass
+
+    def _reset_flowmeter(self) -> None:
+        pass
+
+    # --- modo prueba de hardware -------------------------------------------
+    def set_display(self, canal: str, valor) -> tuple[bool, str]:
+        """
+        Fuerza la lectura de un instrumento. Con el hardware conectado esto
+        escribe el valor en el display o en el indicador fisico de la consola;
+        sirve para verificar el cableado sin correr un ejercicio.
+        """
+        if not isinstance(valor, (int, float)) or isinstance(valor, bool):
+            return False, f"{canal} espera un número"
+        self._overrides[canal] = round(float(valor), 2)
+        return True, ""
+
+    def clear_displays(self) -> None:
+        self._overrides.clear()
+
+    def set_calibration(self, control: str, datos: dict) -> tuple[bool, str]:
+        """Guarda el recorrido util de una perilla motorizada (Nema 17)."""
+        if control not in LIMITES:
+            return False, f"Control desconocido: {control}"
+        try:
+            minimo, maximo = float(datos.get("min", 0)), float(datos.get("max", 0))
+        except (TypeError, ValueError):
+            return False, "Valores de calibración inválidos"
+        if maximo - minimo <= 0.1:
+            return False, "La diferencia entre máximo y mínimo debe ser mayor que 0,1"
+        self._calibraciones[control] = {
+            "min": minimo,
+            "max": maximo,
+            "current": float(datos.get("current", 0) or 0),
+            "margin": float(datos.get("margin", 1) or 1),
+        }
+        return True, ""
+
+    def calibrations(self) -> dict:
+        return dict(self._calibraciones)
 
     def read_telemetry(self, dt: float) -> dict:  # pragma: no cover
         raise NotImplementedError
@@ -251,12 +302,21 @@ class MockBackend(BaseBackend):
     def _reset_strokes(self) -> None:
         self.t["total_strokes"] = 0.0
 
+    def _reset_flowmeter(self) -> None:
+        self.t["flowmeter"] = 0.0
+
     def read_telemetry(self, dt: float) -> dict:
         c, t = self._state, self.t
         ruido = lambda a: random.uniform(-a, a)  # noqa: E731
         lerp = lambda a, b, k: a + (b - a) * k  # noqa: E731
 
-        preventores = [c["annular"], c["pipe_rams_upper"], c["blind_rams"], c["pipe_rams_lower"]]
+        preventores = [
+            c["annular"],
+            c["pipe_rams_upper"],
+            c["blind_rams"],
+            c["pipe_rams_lower"],
+            c["pipe_rams_bottom"],
+        ]
         pozo_cerrado = any(preventores)
 
         # --- Bombas y circulación -----------------------------------------
@@ -367,7 +427,9 @@ class MockBackend(BaseBackend):
         )
         t["air_supply_pressure"] = clamp(120 + ruido(2), 0, 200)
 
-        return {k: round(v, 2) for k, v in t.items()}
+        salida = {k: round(v, 2) for k, v in t.items()}
+        salida.update(self._overrides)  # lecturas forzadas en modo prueba
+        return salida
 
 
 class PoKeysBackend(BaseBackend):
@@ -399,10 +461,12 @@ class PoKeysBackend(BaseBackend):
         "link_rotation": 14,  # DO 14 y DO 15
         "link_tilting": 16,  # DO 16 y DO 17
         "clamp": 18,
+        "rig_air": 19,
         "annular": 20,
         "pipe_rams_upper": 21,
         "blind_rams": 22,
         "pipe_rams_lower": 23,
+        "pipe_rams_bottom": 31,
         "kill_line": 24,
         "choke_line": 25,
         "bypass": 26,
@@ -423,7 +487,7 @@ class PoKeysBackend(BaseBackend):
         "hydraulic_regulator": 8,
     }
     # Botones momentaneos: se pulsan y se sueltan.
-    PULSADORES = {"reset_strokes": 30}
+    PULSADORES = {"reset_strokes": 30, "flowmeter_reset": 33}
 
     def __init__(self) -> None:
         super().__init__()
@@ -456,6 +520,9 @@ class PoKeysBackend(BaseBackend):
 
     def _reset_strokes(self) -> None:
         pass  # TODO: pulsar DO 30 durante ~300 ms
+
+    def _reset_flowmeter(self) -> None:
+        pass  # TODO: pulsar DO 33 durante ~300 ms
 
     def read_telemetry(self, dt: float) -> dict:
         # TODO: leer del software del ESIM-PDS9B o de las entradas analogicas.

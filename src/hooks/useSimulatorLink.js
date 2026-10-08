@@ -28,6 +28,7 @@ export function useSimulatorLink() {
   const [queue, setQueue] = useState(0)
   const [alarms, setAlarms] = useState([])
   const [latency, setLatency] = useState(null)
+  const [calibrations, setCalibrations] = useState({})
 
   const wsRef = useRef(null)
   const controlsRef = useRef(controls)
@@ -186,6 +187,28 @@ export function useSimulatorLink() {
 
   const clearSamples = useCallback(() => setSamples([]), [])
 
+  /**
+   * Fuerza la lectura de un instrumento (modo prueba de hardware): con el
+   * simulador conectado, el gateway escribe ese valor en el display físico.
+   */
+  const forceInstrument = useCallback(
+    (canal, valor) => {
+      const enviado = enviar({ type: 'display', channel: canal, value: valor })
+      if (!enviado && engineRef.current) engineRef.current.setOverride(canal, valor)
+      pushAlarm('warning', `Prueba de hardware: ${canal} forzado a ${valor}`)
+    },
+    [enviar, pushAlarm],
+  )
+
+  /** Guarda el recorrido útil de una perilla motorizada. */
+  const setCalibration = useCallback(
+    (control, datos) => {
+      setCalibrations((prev) => ({ ...prev, [control]: datos }))
+      enviar({ type: 'calibration', control, ...datos })
+    },
+    [enviar],
+  )
+
   const last = samples.length ? samples[samples.length - 1] : null
 
   return {
@@ -201,6 +224,9 @@ export function useSimulatorLink() {
     setControl,
     runAction,
     pushAlarm,
+    forceInstrument,
+    setCalibration,
+    calibrations,
     requestControl,
     releaseControl,
     clearSamples,

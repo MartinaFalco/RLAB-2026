@@ -28,15 +28,20 @@ monitor de la vista gráfica 3D.
 |---|---|---|---|
 | 1 | **Perforador** (azul) | Presión de bomba, torque y velocidad de rotaria, SPM de cada bomba | Embragues de bomba, perillas de SPM, mesa rotaria FWD/OFF/REV, embrague del tambor, acelerador del malacate, freno del perforador y freno auxiliar |
 | 2 | **Top drive** (azul) | Torque y velocidad | Operación DRILL/SPIN/TORQUE, dirección CCW/STOP/CW, acelerador, límite de torque, IBOP, perno de traba, links y clamp |
-| 3 | **BOP** (roja) | Presión de acumulador, manifold, aire y anular, caudalímetro | Preventor anular, dos rams de tubería, ram ciego, líneas de matar y de estrangular, bypass, regulador de presión |
+| 3 | **BOP** (roja) | Presión de acumulador, manifold, aire y anular, caudalímetro | Aire de equipo, preventor anular, tres rams de tubería, ram ciego, líneas de matar y de estrangular, bypass, regulador de presión con selector RAMS/ANNULAR |
 | 4 | **Estrangulador** (amarilla) | Presión de tubería, de casing y de línea de matar, SPM, emboladas totales, posición del choke | Palanca del choke (abrir/mantener/cerrar), selección choke 1/2, regulador hidráulico, reset de emboladas |
 
 Se suman la **notebook** (i7 con placa dedicada) que corre el software de simulación, la **pantalla
 táctil** desde la que el instructor carga escenarios y fallas, y el **monitor** de la vista gráfica.
 
-En total la web expone **33 comandos** sobre las cuatro consolas y **28 canales de telemetría**
+En total la web expone **37 comandos** sobre las cuatro consolas y **28 canales de telemetría**
 (definidos en [`src/data/controls.js`](src/data/controls.js) y
 [`src/data/telemetry.js`](src/data/telemetry.js)).
+
+> El modelo sale de la especificación de Esimtech, corregido contra las fotos del equipo recibido:
+> el panel real suma la llave **RIG AIR**, el selector **RAMS/ANNULAR** del regulador y un **tercer
+> ram de tubería** por debajo de las líneas, y rotula la dirección y la velocidad del perforador como
+> **TD/RT** (sirven tanto para la mesa rotaria como para el top drive).
 
 ---
 
@@ -46,7 +51,7 @@ En total la web expone **33 comandos** sobre las cuatro consolas y **28 canales 
 |---|---|
 | **Inicio** | Presentación del sistema, las dos líneas de remotización (asistida y autónoma) e instituciones participantes. |
 | **Modelo 3D** | Vista interactiva del puesto (rotación, zoom y desplazamiento) construida con three.js. Hoy es esquemática y se reemplaza por un `.glb` cuando se releve el equipo. |
-| **Controles del Simulador** | El corazón del sitio: indicadores en vivo, selección de variables, escenarios del instructor, las cuatro consolas con sus perillas/llaves/palancas, grilla de 5 cámaras, límites de alarma configurables, registro de eventos y gráficos con exportación a CSV. |
+| **Controles del Simulador** | El corazón del sitio, con dos vistas sobre el mismo estado: **Panel de control** (indicadores en vivo, selección de variables, escenarios del instructor, tarjetas de comando, grilla de 5 cámaras, límites de alarma, eventos y gráficos con exportación a CSV) y **Consolas interactivas** (réplica dibujada de las cuatro consolas, con sus instrumentos y mandos). |
 | **¿Cómo funciona?** | Sub-pestañas *El Simulador* (fichas de cada consola), *Resumen* (qué calcula el simulador, prácticas previstas y esquema de conexión), *Sensores y actuadores* (tablas de canales y mapeo de E/S) y *Galería*. |
 | **El equipo** | Integrantes y roles. |
 
@@ -57,6 +62,20 @@ toma y liberación del control, y **parada de emergencia** con confirmación.
 Los comandos que mueven preventores o disparan cierres piden confirmación antes de enviarse, y los
 controles dependientes quedan bloqueados mientras no corresponda (por ejemplo, la perilla de SPM
 solo se habilita con el embrague de esa bomba activado).
+
+### Consolas interactivas
+
+Réplica dibujada de los cuatro paneles, con la disposición de la aplicación **Hardware Test** del
+fabricante y los colores del equipo real. Las llaves se accionan con un clic, las perillas se giran
+arrastrando el mouse y los instrumentos muestran la telemetría en vivo. Es la misma sesión que el
+panel de control: lo que se acciona en una vista se ve inmediatamente en la otra.
+
+Activando **Modo prueba de hardware** se puede hacer clic en cualquier instrumento para forzar su
+lectura con el teclado numérico —la web manda `display` y el gateway escribe ese valor en el display
+físico de la consola—, y con doble clic en una perilla se abre su **calibración** (valor actual,
+máximo, mínimo y margen), que es lo que después usa el motor Nema 17 para convertir un valor de
+ingeniería en pasos. Las dos funciones están pensadas para verificar el cableado sin correr un
+ejercicio, igual que en la herramienta del fabricante.
 
 ---
 
@@ -98,6 +117,8 @@ que valida el rango, verifica que quien lo manda tenga el control y recién ahí
 | gateway → web | `{"type":"alarm","level":"critical","message":"..."}` |
 | web → gateway | `{"type":"command","control":"pump1_spm","value":60}` |
 | web → gateway | `{"type":"action","action":"cierre_duro"}` |
+| web → gateway | `{"type":"display","channel":"manifold_pressure","value":777}` (modo prueba) |
+| web → gateway | `{"type":"calibration","control":"pump1_spm","min":0,"max":120,"current":30,"margin":2}` |
 | web → gateway | `{"type":"request_control"}` / `{"type":"release_control"}` |
 
 ---
@@ -114,9 +135,10 @@ que valida el rango, verifica que quien lo manda tenga el control y recién ahí
 │   ├── App.jsx               # navegación entre secciones
 │   ├── config.js             # lectura de variables de entorno
 │   ├── styles.css            # tema oscuro de sala de control
-│   ├── components/           # NavBar, StatusBar, Home, Model3D, ControlPanel,
-│   │                         # ControlCard, CameraGrid, Charts, AlarmSettings,
-│   │                         # HowItWorks, Team
+│   ├── components/           # NavBar, StatusBar, Home, Model3D, ControlsSection,
+│   │                         # ControlPanel, ControlCard, CameraGrid, Charts,
+│   │                         # AlarmSettings, InteractiveConsoles, HowItWorks, Team
+│   │   └── consoles/         # réplica SVG de las consolas (ConsoleParts + Panels)
 │   ├── data/
 │   │   ├── telemetry.js      # canales de telemetría (unidades, rangos, colores)
 │   │   ├── controls.js       # consolas, controles y mapeo a actuadores

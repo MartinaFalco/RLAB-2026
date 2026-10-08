@@ -2,7 +2,7 @@ import { lazy, Suspense, useState } from 'react'
 import NavBar from './components/NavBar'
 import StatusBar from './components/StatusBar'
 import Home from './components/Home'
-import ControlPanel from './components/ControlPanel'
+import ControlsSection from './components/ControlsSection'
 import HowItWorks from './components/HowItWorks'
 import Team from './components/Team'
 import { useSimulatorLink } from './hooks/useSimulatorLink'
@@ -34,7 +34,7 @@ export default function App() {
             <Model3D />
           </Suspense>
         )}
-        {section === 'controles' && <ControlPanel link={link} />}
+        {section === 'controles' && <ControlsSection link={link} />}
         {section === 'como-funciona' && <HowItWorks />}
         {section === 'equipo' && <Team />}
       </main>

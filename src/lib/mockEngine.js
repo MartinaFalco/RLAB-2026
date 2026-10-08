@@ -67,7 +67,7 @@ export function createMockEngine() {
    * @returns {object}  muestra de telemetria
    */
   function step(c, dt) {
-    const preventores = [c.annular, c.pipe_rams_upper, c.blind_rams, c.pipe_rams_lower]
+    const preventores = [c.annular, c.pipe_rams_upper, c.blind_rams, c.pipe_rams_lower, c.pipe_rams_bottom]
     const pozoCerrado = preventores.some(Boolean)
 
     // --- Bombas y circulación ---------------------------------------------
@@ -198,13 +198,22 @@ export function createMockEngine() {
     return sample()
   }
 
+  /** Valores forzados desde el modo prueba de hardware. */
+  const overrides = {}
+
   function sample() {
     const out = {}
     for (const [k, v] of Object.entries(state)) {
       if (k.startsWith('_')) continue
       out[k] = Number(v.toFixed(2))
     }
-    return out
+    return { ...out, ...overrides }
+  }
+
+  /** Fija (o libera, con null) la lectura de un instrumento. */
+  function setOverride(canal, valor) {
+    if (valor == null) delete overrides[canal]
+    else overrides[canal] = valor
   }
 
   /** Ejecuta las macros (cierres de emergencia y reset de emboladas). */
@@ -236,6 +245,10 @@ export function createMockEngine() {
       state.total_strokes = 0
       return controls
     }
+    if (actionId === 'flowmeter_reset') {
+      state.flowmeter = 0
+      return controls
+    }
     if (actionId === 'parada_emergencia') {
       state.choke_position = 0
       return {
@@ -259,5 +272,5 @@ export function createMockEngine() {
     return controls
   }
 
-  return { step, sample, applyAction }
+  return { step, sample, applyAction, setOverride }
 }

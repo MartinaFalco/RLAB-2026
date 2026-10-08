@@ -209,6 +209,34 @@ async def manejar_mensaje(cliente: Cliente, msg: dict) -> None:
             await cliente.ws.send_text(json.dumps({"type": "alarm", "level": "warning", "message": detalle}))
         await difundir(json.dumps({"type": "state", "controls": sala.backend.state()}))
 
+    elif tipo == "display":
+        # Modo prueba de hardware: forzar la lectura de un instrumento.
+        ok, detalle = sala.backend.set_display(msg.get("channel"), msg.get("value"))
+        nivel = "warning" if ok else "critical"
+        texto = (
+            f"Prueba de hardware: {msg.get('channel')} forzado a {msg.get('value')}"
+            if ok
+            else f"Valor rechazado: {detalle}"
+        )
+        await difundir(json.dumps({"type": "alarm", "level": nivel, "message": texto}))
+
+    elif tipo == "calibration":
+        ok, detalle = sala.backend.set_calibration(
+            msg.get("control"),
+            {k: msg.get(k) for k in ("min", "max", "current", "margin")},
+        )
+        await cliente.ws.send_text(
+            json.dumps(
+                {
+                    "type": "alarm",
+                    "level": "warning" if ok else "critical",
+                    "message": (
+                        f"Calibración guardada para {msg.get('control')}" if ok else f"Calibración rechazada: {detalle}"
+                    ),
+                }
+            )
+        )
+
     elif tipo == "action":
         sala.backend.apply_action(msg.get("action"))
         await difundir(json.dumps({"type": "state", "controls": sala.backend.state()}))
