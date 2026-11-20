@@ -16,18 +16,48 @@ export const MOCK_PERIOD_MS = 500
 /** Cantidad maxima de muestras que se mantienen en memoria (~10 min a 2 Hz). */
 export const MAX_SAMPLES = 1200
 
+function envNumber(value, fallback) {
+  if (value == null || value.trim() === '') return fallback
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : fallback
+}
+
 /** Camaras configuradas. Las que no tienen URL muestran un placeholder. */
 export const CAMERAS = [
-  { id: 1, name: 'Consola 1 · Perforación', url: env.VITE_CAM_1 || '' },
-  { id: 2, name: 'Consola 2 · Bombas', url: env.VITE_CAM_2 || '' },
-  { id: 3, name: 'Consola 3 · Estrangulador', url: env.VITE_CAM_3 || '' },
-  { id: 4, name: 'Consola 4 · BOP', url: env.VITE_CAM_4 || '' },
-  { id: 5, name: 'Vista general del laboratorio', url: env.VITE_CAM_5 || '' },
+  {
+    id: 1,
+    name: 'Consola 1 · Perforación',
+    url: env.VITE_CAM_1 || '',
+    rotate: envNumber(env.VITE_CAM_1_ROTATE, 0),
+    zoom: envNumber(env.VITE_CAM_1_ZOOM, 1),
+  },
+  {
+    id: 2,
+    name: 'Consola 2 · Bombas',
+    url: env.VITE_CAM_2 || '',
+    rotate: envNumber(env.VITE_CAM_2_ROTATE, 0),
+    zoom: envNumber(env.VITE_CAM_2_ZOOM, 1),
+  },
+  {
+    id: 3,
+    name: 'Consola 3 · Estrangulador',
+    url: env.VITE_CAM_3 || '',
+    rotate: envNumber(env.VITE_CAM_3_ROTATE, 0),
+    zoom: envNumber(env.VITE_CAM_3_ZOOM, 1),
+  },
+  {
+    id: 4,
+    name: 'Consola 4 · BOP',
+    url: env.VITE_CAM_4 || '',
+    rotate: envNumber(env.VITE_CAM_4_ROTATE, 0),
+    zoom: envNumber(env.VITE_CAM_4_ZOOM, 1),
+  },
 ]
 
-/** Un stream es embebible en <img> si es MJPEG; el resto va en <iframe>. */
+/** Clasifica las URLs de cámara como MJPEG, dispositivo local, iframe o vacío. */
 export function cameraKind(url) {
   if (!url) return 'empty'
+  if (url.startsWith('local:')) return 'local'
   if (/mjpe?g|\.cgi|snapshot/i.test(url)) return 'mjpeg'
   return 'iframe'
 }

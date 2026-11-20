@@ -243,7 +243,7 @@ function Resumen() {
 
       <h3>Las dos líneas de remotización</h3>
       <p>
-        <strong>Línea A · Remotización asistida.</strong> Cinco cámaras HD transmiten el estado de las
+        <strong>Línea A · Remotización asistida.</strong> Cuatro cámaras HD transmiten el estado de las
         consolas; la notebook se opera con software de escritorio remoto y un
         operador local ejecuta las acciones físicas indicadas por audio o chat. Es la vía de menor costo
         y la que permite un piloto en pocas semanas.
@@ -273,7 +273,7 @@ function Resumen() {
           <Arrow x1={660} y1={210} x2={740} y2={210} label="Streams" />
 
           <Box x={740} y={40} w={190} h={80} color="#f97316" title="PoKeys57U" sub="Nema 17 · solenoide JF0530B" />
-          <Box x={740} y={170} w={190} h={80} color="#22d3ee" title="5 cámaras Brio 100" sub="Consolas y vista general" />
+          <Box x={740} y={170} w={190} h={80} color="#22d3ee" title="4 cámaras Brio 100" sub="Una por consola física" />
 
           <text x="835" y="140" textAnchor="middle" fill="#94a3b8" fontSize="12">
             ▼ consolas portátiles del ESIM-PDS9B ▼
@@ -325,7 +325,7 @@ function Arrow({ x1, y1, x2, y2, label }) {
 }
 
 const HARDWARE = [
-  ['Cámaras Logitech Brio 100 Full HD (×5)', 'Video en vivo de las cuatro consolas y del laboratorio'],
+  ['Cámaras Logitech Brio 100 Full HD (×4)', 'Video en vivo de las cuatro consolas'],
   ['Capturadora Elgato HD60 X', 'Captura y compone la señal de video'],
   ['Raspberry Pi 5 + SSD 512 GB', 'Gateway de control y registro de telemetría'],
   ['Hub USB 3.0 Vention 7 puertos', 'Conexión de cámaras y periféricos'],

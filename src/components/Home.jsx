@@ -26,7 +26,7 @@ export default function Home({ onNavigate }) {
         <article className="card">
           <h3>Modo asistido</h3>
           <p>
-            Cinco cámaras HD transmiten el estado de las consolas y del laboratorio. El usuario remoto
+            Cuatro cámaras HD transmiten el estado de las consolas. El usuario remoto
             indica las maniobras y un operador local las ejecuta, con audio y chat en simultáneo.
           </p>
         </article>

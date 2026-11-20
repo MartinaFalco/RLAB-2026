@@ -51,7 +51,7 @@ En total la web expone **37 comandos** sobre las cuatro consolas y **28 canales 
 |---|---|
 | **Inicio** | Presentación del sistema, las dos líneas de remotización (asistida y autónoma) e instituciones participantes. |
 | **Modelo 3D** | Vista interactiva del puesto (rotación, zoom y desplazamiento) construida con three.js. Hoy es esquemática y se reemplaza por un `.glb` cuando se releve el equipo. |
-| **Controles del Simulador** | El corazón del sitio, con dos vistas sobre el mismo estado: **Panel de control** (indicadores en vivo, selección de variables, escenarios del instructor, tarjetas de comando, grilla de 5 cámaras, límites de alarma, eventos y gráficos con exportación a CSV) y **Consolas interactivas** (réplica dibujada de las cuatro consolas, con sus instrumentos y mandos). |
+| **Controles del Simulador** | El corazón del sitio, con dos vistas sobre el mismo estado: **Panel de control** (indicadores en vivo, selección de variables, escenarios del instructor, tarjetas de comando, grilla 2×2 de cuatro cámaras, límites de alarma, eventos y gráficos con exportación a CSV) y **Consolas interactivas** (réplica dibujada de las cuatro consolas, con sus instrumentos y mandos). |
 | **¿Cómo funciona?** | Sub-pestañas *El Simulador* (fichas de cada consola), *Resumen* (qué calcula el simulador, prácticas previstas y esquema de conexión), *Sensores y actuadores* (tablas de canales y mapeo de E/S) y *Galería*. |
 | **El equipo** | Integrantes y roles. |
 
@@ -100,7 +100,7 @@ ejercicio, igual que en la herramienta del fabricante.
        ▲
        │ streams de video
 ┌──────┴─────────────────────┐
-│ 5 cámaras Logitech Brio 100 + capturadora Elgato HD60 X │
+│ 4 cámaras Logitech Brio 100, una por consola física      │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -330,8 +330,12 @@ npx gh-pages -d dist
    | HLS | 5–15 s | `ffmpeg` + Nginx. Solo si la latencia no importa. |
    | YouTube en vivo (no listado) | 10–30 s | OBS Studio con la Elgato HD60 X; se pega la URL de embed en `VITE_CAM_n`. Es lo que usa el laboratorio del IdeI-UNGS. |
 
-   Cualquiera sea el método, la URL se carga en `VITE_CAM_1…VITE_CAM_5`. El componente detecta solo
-   si es MJPEG (`<img>`) o un player embebible (`<iframe>`).
+   Cualquiera sea el método, la URL se carga en `VITE_CAM_1…VITE_CAM_4`. Para cámaras USB locales
+   se usa `local:<nombre>#<indice>` como respaldo (en `.env`, escribirlo entre comillas por el `#`);
+   el botón **Asignar cámaras** permite fijar cada dispositivo por `deviceId` en el navegador.
+   Las variables `VITE_CAM_1_ROTATE…VITE_CAM_4_ROTATE`
+   y `VITE_CAM_1_ZOOM…VITE_CAM_4_ZOOM` ajustan el giro y el acercamiento de cámaras locales.
+   El componente detecta si la fuente es local, MJPEG (`<img>`) o un player embebible (`<iframe>`).
 
 ### 6.3 Conexión con el hardware (pasar de demo a real)
 
@@ -365,7 +369,7 @@ Checklist de seguridad antes de la primera operación remota sin operador presen
 - [ ] Límites de rango en `LIMITES` (`hardware.py`) revisados contra los topes mecánicos reales.
 - [ ] Caída del operador ⇒ parada de emergencia automática (ya implementado en `desconectar()`).
 - [ ] Watchdog: si el gateway deja de recibir *pings*, lleva los actuadores a reposo.
-- [ ] Una cámara siempre encuadrando el conjunto, para poder ver qué pasó.
+- [ ] Las cuatro cámaras de consola funcionando y encuadrando cada puesto.
 - [ ] Log de sesión activado (`RLAB_LOG_DIR`) para auditar cada maniobra.
 
 ### 6.4 Integración con la plataforma R-Lab
@@ -391,7 +395,7 @@ La web espera un **token de sesión** por usuario y turno:
 | Verificar el mapeo contra el equipo recibido (puede diferir de la especificación) | `src/data/controls.js` y `LIMITES` en `server/hardware.py` |
 | Mapeo real de E/S del PoKeys57U | `PoKeysBackend` en `server/hardware.py` y campo `actuator` en `src/data/controls.js` |
 | Lectura de telemetría del ESIM-PDS9B | `PoKeysBackend.read_telemetry` |
-| URLs de las cámaras | `.env` (`VITE_CAM_1` … `VITE_CAM_5`) |
+| URLs y ajuste de las cámaras | `.env` (`VITE_CAM_1` … `VITE_CAM_4`, rotación y zoom) |
 | Autenticación real contra R-Lab | `ws_endpoint` en `server/main.py` |
 
 ---
